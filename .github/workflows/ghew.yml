@@ -1,0 +1,35 @@
+name: ghew
+
+on:
+  push:
+  schedule:
+    - cron: '0 */2 * * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: Checkout
+      run: |
+        git config --global --add safe.directory $(pwd)
+        git clone --quiet https://github.com/${{ github.repository }} .
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+    - name: Install dependencies
+      run: |
+        sudo python -m pip install --upgrade pip
+        if [ -f requirements.txt ]; then sudo pip install -r requirements.txt; fi
+    - name: run script
+      run: |
+        # fetch new ip content and update readme file
+        sudo python fetch_ips.py
+    - name: Push
+      id: commit
+      run: |
+        git config user.name github-actions
+        git config user.email github-actions@github.com
+        git add .
+        git commit -m "$(date "+%Y-%m-%d %H:%M:%S")" --allow-empty
+        git push
