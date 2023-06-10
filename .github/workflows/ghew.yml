@@ -10,7 +10,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: Checkout
+    - name: Checkout
       run: |
         git config --global --add safe.directory $(pwd)
         git clone --quiet https://github.com/${{ github.repository }} .
